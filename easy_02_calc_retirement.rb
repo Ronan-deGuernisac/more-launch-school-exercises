@@ -13,13 +13,20 @@ def prompt_for_input(prompt)
     break if numeric?(input)
   end
 
-  input
+  input.to_i
+end
+
+def current_year
+  Time.new.year
 end
 
 def retirement_year(age, ret_age)
+  current_year + ret_age - age
 end 
 
 current_age = prompt_for_input("What is your age?")
 retirement_age = prompt_for_input("What is your retirement age")
+retirement_yr = retirement_year(current_age, retirement_age)
 
-puts "It's "
+puts "It's #{current_year}. You will retire in #{retirement_yr}"
+puts "You have only #{retirement_yr - current_year} years until retirement!"
