@@ -26,5 +26,3 @@ width = get_input("width")
 area_meters = area_in_meters(length, width)
 
 puts "the area of the room is #{area_meters} square meters (#{area_in_feet(area_meters)} square feet)"
-
-
