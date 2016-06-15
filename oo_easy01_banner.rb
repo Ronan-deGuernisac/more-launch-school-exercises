@@ -47,7 +47,7 @@ class Banner
       multi_line = []
       
       lines.each do |line|
-        extra_spaces = ' ' * (length - line.length) 
+        extra_spaces = ' ' * (length - line.length)
         multi_line << "| #{line + extra_spaces} |"
       end
 
