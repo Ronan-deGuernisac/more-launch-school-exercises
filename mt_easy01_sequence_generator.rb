@@ -7,11 +7,4 @@ def step(start, stop, step)
   Range.new(start, stop)
 end
 
-step(1, 10, 3) do |value|
-  value = value * 10
-  puts value
-end
-
-
-
-
+step(1, 10, 4) { |value| puts "value = #{value}"}
