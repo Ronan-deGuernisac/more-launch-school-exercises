@@ -13,8 +13,17 @@ class Person
   end
 end
 
+module Legs
+end
+ 
+module Speak
+end
+
 class Pets
   attr_accessor :name, :breed
+
+  include Legs, Speak
+  include Speak
 
   def initialize(name, breed)
     @name = name
@@ -34,3 +43,5 @@ missy = Cat.new 'Missy', 'Domestic'
 bob.pets << spike
 bob.pets << missy 
 bob.list_pets
+
+p Pets.ancestors
