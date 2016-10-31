@@ -1,10 +1,16 @@
 require 'sequel'
 
-class GenerateDatabase
+class ConnectDatabase
   attr_accessor :db, :data
 
   def initialize
     @db = Sequel.connect "postgres://localhost/billing2"
+  end
+end
+
+class GenerateDatabase < ConnectDatabase
+  def initialize
+    super
   end
 
   def create_database
@@ -99,30 +105,40 @@ class GenerateDatabase
   end
 end
 
-class QueryDatabase
-  attr_accessor :db
-
+class QueryDatabase < ConnectDatabase
   def initialize
-    @db = Sequel.connect "postgres://localhost/billing2"
+    super
   end
 
   def customers_with_services
     db[:customers].select(%i(customers__id name payment_token))
-                      .distinct
-                      .join_table(:inner, :customers_services, customer_id: :id)
+                  .join_table(:inner, :customers_services, customer_id: :id)
+                  .group(:customers__id)
+                  .order(:customers__id)
+                  .each { |row| puts row[:row] }
+  end
+
+  def customers_without_services
+    db[:customers].select(%i(customers__id name payment_token))
+                  .join_table(:left, :customers_services, customer_id: :id)
+                  .where(customers_services__id: nil)
+                  .group(:customers__id)
+                  .order(:customers__id)
+                  .each { |row| puts row[:row] }
   end
 end
 
-db = GenerateDatabase.new
+class Generator
+  def generate
+    db = GenerateDatabase.new
 
-database_created = db.create_database
+    database_created = db.create_database
 
-if database_created
-  db.create_tables
-  db.populate_data
-  puts "database created"
+    if database_created
+      db.create_tables
+      db.populate_data
+      puts "database created"
+    end
+  end
 end
 
-billing = QueryDatabase.new
-
-puts billing.customers_with_services.all
