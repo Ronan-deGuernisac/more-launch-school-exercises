@@ -126,6 +126,21 @@ class QueryDatabase < ConnectDatabase
                   .order(:customers__id)
                   .each { |row| puts row[:row] }
   end
+
+  def customers_with_greater_15
+    customer_info = db[:customers].select do
+      [Sequel.as(split_part(name, ' ', 1), :first_name),
+       Sequel.as(split_part(name, ' ', 2), :last_name)]
+    end
+
+    customer_info.left_join(:customers_services, customer_id: :customers__id)
+                 .left_join(:services, services__id: :service_id)
+                 .where { price >= 15.00 }
+                 .order(:last_name, :first_name)
+                 .distinct
+                 .limit(3)
+                 .each { |row| puts "#{row[:last_name]}, #{row[:first_name]}"}
+  end
 end
 
 class Generator
