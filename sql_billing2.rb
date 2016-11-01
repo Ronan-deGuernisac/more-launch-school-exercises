@@ -141,6 +141,15 @@ class QueryDatabase < ConnectDatabase
                  .limit(3)
                  .each { |row| puts "#{row[:last_name]}, #{row[:first_name]}"}
   end
+
+  def services_with_greater_3_customers
+    db[:services].left_join(:customers_services, service_id: :services__id)
+                 .left_join(:customers, customers__id: :customer_id)
+                 .select { [services__description, count(customers_services__id)] }  
+                 .group(:services__description)
+                 .having { count(:customers_services__id) >= 3 }
+                 .each { |row| puts "#{row[:description]}, #{row[:count]}"}
+  end
 end
 
 class Generator
