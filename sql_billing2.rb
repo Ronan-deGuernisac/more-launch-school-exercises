@@ -47,7 +47,8 @@ class GenerateDatabase < ConnectDatabase
       { name: 'Lynn Blake',    payment_token: 'KLZXWEEE' },
       { name: 'Chen Ke-Hua',   payment_token: 'KWETYCVX' },
       { name: 'Scott Lakso',   payment_token: 'UUEAPQPS' },
-      { name: 'Jim Pornot',    payment_token: 'XKJEYAZA' }
+      { name: 'Jim Pornot',    payment_token: 'XKJEYAZA' },
+      { name: 'John Doe',      payment_token: 'EYODHLCN' }
     ]
 
     services_data = [
@@ -77,7 +78,10 @@ class GenerateDatabase < ConnectDatabase
       { customer_id: 5, service_id: 6 },
       { customer_id: 6, service_id: 1 },
       { customer_id: 6, service_id: 6 },
-      { customer_id: 6, service_id: 7 }
+      { customer_id: 6, service_id: 7 },
+      { customer_id: 7, service_id: 1 },
+      { customer_id: 7, service_id: 2 },
+      { customer_id: 7, service_id: 3 }
     ]
 
     insert_customer_rows(customers_data)
@@ -116,6 +120,8 @@ class QueryDatabase < ConnectDatabase
                   .group(:customers__id)
                   .order(:customers__id)
                   .each { |row| puts row[:row] }
+
+    db.disconnect
   end
 
   def customers_without_services
@@ -125,6 +131,8 @@ class QueryDatabase < ConnectDatabase
                   .group(:customers__id)
                   .order(:customers__id)
                   .each { |row| puts row[:row] }
+
+    db.disconnect
   end
 
   def customers_with_greater_15
@@ -140,6 +148,8 @@ class QueryDatabase < ConnectDatabase
                  .distinct
                  .limit(3)
                  .each { |row| puts "#{row[:last_name]}, #{row[:first_name]}"}
+
+    db.disconnect
   end
 
   def services_with_greater_3_customers
@@ -149,6 +159,24 @@ class QueryDatabase < ConnectDatabase
                  .group(:services__description)
                  .having { count(:customers_services__id) >= 3 }
                  .each { |row| puts "#{row[:description]}, #{row[:count]}"}
+
+    db.disconnect
+  end
+
+  def total_gross_income
+    db[:customers_services].select { sum(services__price).cast(:money).as(:gross) }
+                 .inner_join(:services, services__id: :service_id)
+                 .each { |row| puts row[:gross] }
+
+    db.disconnect
+  end
+
+  def show_all_data
+    db[:customers].each { |customer| puts customer }
+    puts ''
+    db[:customers_services].each { |customer_service| puts customer_service }
+    db.disconnect
+    nil
   end
 end
 
@@ -165,4 +193,3 @@ class Generator
     end
   end
 end
-
