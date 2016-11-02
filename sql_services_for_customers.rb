@@ -11,6 +11,10 @@ def query
                 .order(:customers__name, :services__description)
 end
 
+def print_service(row)
+  puts "  #{row[:description]} #{row[:price]}"
+end
+
 current_name = nil
 
 query.each do |row|
@@ -18,8 +22,8 @@ query.each do |row|
   if current_name != name
     current_name = name
     puts "#{current_name}"
-    puts "  #{row[:description]} #{row[:price]}"
+    print_service(row)
   else
-    puts "  #{row[:description]} #{row[:price]}"
+    print_service(row)
   end
 end
